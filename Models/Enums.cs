@@ -12,16 +12,4 @@ namespace GeneratorDataProcessor.Models
         Gas,
         Coal
     }
-    public enum ValueFactorLevel
-    {
-        Low,
-        Medium,
-        High
-    }
-    public enum EmissionsFactorLevel
-    {
-        Low,
-        Medium,
-        High
-    }
 }

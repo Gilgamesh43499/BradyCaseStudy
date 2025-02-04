@@ -47,10 +47,8 @@ namespace GeneratorDataProcessor.Services
         }
         private Dictionary<DateTime, GeneratorBase> CalculateMaxDailyEmissions(List<GeneratorBase> generators)
         {
-            // Only consider Gas/Coal for emissions
             var fossilGenerators = generators.Where(g => g.Type == GeneratorType.Gas || g.Type == GeneratorType.Coal);
 
-            // Build a map: Date => (Generator => dailyEmission)
             var dateEmissionMap = new Dictionary<DateTime, Dictionary<GeneratorBase, double>>();
 
             foreach (var gen in fossilGenerators)
@@ -70,7 +68,6 @@ namespace GeneratorDataProcessor.Services
                 }
             }
 
-            // Find the generator with the highest emission for each date
             var maxDailyEmissions = new Dictionary<DateTime, GeneratorBase>();
             foreach (var dateEntry in dateEmissionMap)
             {
