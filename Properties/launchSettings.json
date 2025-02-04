@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GeneratorDataProcessor": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
