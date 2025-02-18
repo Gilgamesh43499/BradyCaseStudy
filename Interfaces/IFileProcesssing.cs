@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GeneratorDataProcessor.Interfaces
 {
-    internal interface IFileProcesssing
+    public interface IFileProcesssing
     {
         void ProcessGenerationReport(string inputFilePath,string OutPutFolder);
     }
