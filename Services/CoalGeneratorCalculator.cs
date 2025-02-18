@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GeneratorDataProcessor.Services
 {
-    internal class CoalGeneratorCalculator : ICalculationStrategy
+    public class CoalGeneratorCalculator : ICalculationStrategy
     {
         public double CalculateEmissions(GeneratorBase generator, DayData dayData, ReferenceData referenceData)
         {
