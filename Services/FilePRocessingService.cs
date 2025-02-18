@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GeneratorDataProcessor.Services
 {
-    internal class FilePRocessingService : IFileProcesssing
+    public class FilePRocessingService : IFileProcesssing
     {
         private readonly ReferenceData _referenceData;
         public FilePRocessingService(ReferenceData referenceData)
@@ -39,11 +39,11 @@ namespace GeneratorDataProcessor.Services
         }
         private void CalculateTotals(List<GeneratorBase> generators)
         {
-            foreach (var gen in generators)
+            Parallel.ForEach(generators, gen =>
             {
                 var calculator = GeneratorCalculatorFactory.GetCalculator(gen);
                 calculator?.CalculateTotalValue(gen, _referenceData);
-            }
+            });
         }
         private Dictionary<DateTime, GeneratorBase> CalculateMaxDailyEmissions(List<GeneratorBase> generators)
         {
@@ -51,7 +51,7 @@ namespace GeneratorDataProcessor.Services
 
             var dateEmissionMap = new Dictionary<DateTime, Dictionary<GeneratorBase, double>>();
 
-            foreach (var gen in fossilGenerators)
+            Parallel.ForEach(fossilGenerators, gen =>
             {
                 var calculator = GeneratorCalculatorFactory.GetCalculator(gen);
 
@@ -66,7 +66,7 @@ namespace GeneratorDataProcessor.Services
 
                     dateEmissionMap[day.Date][gen] = dailyEmission;
                 }
-            }
+            });
 
             var maxDailyEmissions = new Dictionary<DateTime, GeneratorBase>();
             foreach (var dateEntry in dateEmissionMap)
@@ -82,11 +82,11 @@ namespace GeneratorDataProcessor.Services
         private void CalculateCoalHeatRates(List<GeneratorBase> generators)
         {
             var coalGens = generators.Where(g => g is CoalGenerator);
-            foreach (var coalGen in coalGens)
+            Parallel.ForEach(coalGens, coalGen =>
             {
                 var calculator = GeneratorCalculatorFactory.GetCalculator(coalGen);
                 calculator?.CalculateHeatRate(coalGen);
-            }
+            });
         }
     }
 }

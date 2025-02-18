@@ -1,14 +1,11 @@
 ﻿using GeneratorDataProcessor.Interfaces;
+using GeneratorDataProcessor.Models;
 using GeneratorDataProcessor.Services;
 using GeneratorDataProcessor.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks.Dataflow;
 
 namespace GeneratorDataProcessor
 {
@@ -26,10 +23,13 @@ namespace GeneratorDataProcessor
                 ConfigureServices((context, services) =>
                 {
                     var configuration = context.Configuration;
-                    string referenceDataFile = configuration["Settings:ReferenceDataFilePath"] ?? throw new ArgumentNullException("Settings:ReferenceDataFilePath");
-                    referenceDataFile = Path.Combine(Directory.GetCurrentDirectory(), referenceDataFile);
-                    var referenceData = XMLHelper.ParseReferenceData(referenceDataFile);
-                    services.AddSingleton<IFileProcesssing>(new FilePRocessingService(referenceData));
+                    services.AddSingleton<ReferenceData>(provider =>
+                    {
+                        string referenceDataFile = configuration["Settings:ReferenceDataFilePath"] ?? throw new ArgumentNullException("Settings:ReferenceDataFilePath");
+                        referenceDataFile = Path.Combine(Directory.GetCurrentDirectory(), referenceDataFile);
+                        return XMLHelper.ParseReferenceData(referenceDataFile);
+                    });
+                    services.AddSingleton<IFileProcesssing,FilePRocessingService>();
                     services.AddHostedService<FileWatcherSerivce>();
                 }).
                 ConfigureLogging(logging =>

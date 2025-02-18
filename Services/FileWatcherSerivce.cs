@@ -1,14 +1,8 @@
 ﻿using GeneratorDataProcessor.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Polly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace GeneratorDataProcessor.Services
@@ -30,7 +24,7 @@ namespace GeneratorDataProcessor.Services
             _fileProcessingService = fileProcessingService;
             _inputFolder = _configuration["Settings:InputFolderPath"] ?? throw new ArgumentNullException("Settings:InputFolderPath");
             _outputFolder = _configuration["Settings:OutputFolderPath"] ?? throw new ArgumentNullException("Settings:OutputFolderPath");
-           
+            int maxDegreeOfParallelism = -1;
             if (!Directory.Exists(_inputFolder))
                 Directory.CreateDirectory(_inputFolder);
 
@@ -43,7 +37,9 @@ namespace GeneratorDataProcessor.Services
             },
             new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = 1
+                MaxDegreeOfParallelism = maxDegreeOfParallelism == -1
+                ? Environment.ProcessorCount
+                : maxDegreeOfParallelism
             });
 
             _watcher = new FileSystemWatcher
@@ -109,7 +105,7 @@ namespace GeneratorDataProcessor.Services
             {
                 await Task.Run(() =>
                 {
-                    _fileProcessingService?.ProcessGenerationReport(filePath, _configuration?["Settings:OutputFolderPath"]!);
+                    _fileProcessingService?.ProcessGenerationReport(filePath, _outputFolder);
                     _logger.LogInformation($"File processed: {filePath}");
                 });
             }
