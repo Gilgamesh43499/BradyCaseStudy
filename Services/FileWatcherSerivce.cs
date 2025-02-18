@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,8 +91,22 @@ namespace GeneratorDataProcessor.Services
         }
         private  async Task ProcessFileAsync(string filePath)
         {
+            var policy = Policy.Handle<IOException>()
+                        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                        (exception, timeSpan, retryCount, context) =>
+                        {
+                            _logger.LogWarning($"Error processing file: {filePath}. Retry count: {retryCount}");
+                        });
+            await policy.ExecuteAsync(() =>
+            {
+              using (var openFile = new FileStream(filePath,FileMode.Open , FileAccess.Read,FileShare.None))
+              {
+                  
+              }
+              return Task.CompletedTask;
+            });
             try
-           {
+            {
                 await Task.Run(() =>
                 {
                     _fileProcessingService?.ProcessGenerationReport(filePath, _configuration?["Settings:OutputFolderPath"]!);
