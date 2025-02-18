@@ -7,17 +7,19 @@ namespace GeneratorDataProcessor.Services
     {
         public static ICalculationStrategy GetCalculator(IGenerator generator)
         {
-            switch (generator.Type)
+            if (_calculators.TryGetValue(generator.Type, out var factory))
             {
-                case GeneratorType.Wind:
-                    return new WindGeneratorCalculator();
-                case GeneratorType.Gas:
-                    return new GasGeneratorCalculator();
-                case GeneratorType.Coal:
-                    return new CoalGeneratorCalculator();
-                default:
-                    throw new Exception("Invalid Generator");
+                return factory();
             }
+            throw new Exception("Generator type not supported");
         }
+
+        private static readonly Dictionary<GeneratorType, Func<ICalculationStrategy>> _calculators =
+            new Dictionary<GeneratorType, Func<ICalculationStrategy>> 
+            {
+                { GeneratorType.Wind, () => new WindGeneratorCalculator() },
+                { GeneratorType.Gas, () => new GasGeneratorCalculator() },
+                { GeneratorType.Coal, () => new CoalGeneratorCalculator() }
+            };
     }
 }
