@@ -30,7 +30,7 @@ namespace GeneratorDataProcessor.Services
                 string fileName = Path.GetFileNameWithoutExtension(inputFilePath);
                 string outputFileName = $"{fileName}-Results.xml";
                 string outputPath = Path.Combine(OutPutFolder, outputFileName);
-                XMLHelper.GenerateOutputFile(generator, maxDailyEmissions, outputPath);
+                XMLHelper.GenerateOutputFile(generator, maxDailyEmissions, outputPath, _referenceData);
             }
             catch (Exception ex)
             {
