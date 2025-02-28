@@ -95,7 +95,7 @@ namespace GeneratorDataProcessor.Utilities
         }
         public static void GenerateOutputFile(List<GeneratorBase> generators,
                                               Dictionary<DateTime, GeneratorBase> maxDailyEmissions,
-                                              string outputFilePath)
+                                              string outputFilePath, ReferenceData referenceData)
         {
             var root = new XElement("GenerationOutput",
                 new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance"),
@@ -123,7 +123,7 @@ namespace GeneratorDataProcessor.Utilities
                 if (dayData != null)
                 {
                     var calc = GeneratorCalculatorFactory.GetCalculator(gen);
-                    emissionVal = calc.CalculateEmissions(gen, dayData, new()); 
+                    emissionVal = calc.CalculateEmissions(gen, dayData, referenceData); 
                 }
 
                 var dayEl = new XElement("Day",

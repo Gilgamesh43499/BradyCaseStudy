@@ -19,7 +19,7 @@ namespace GeneratorDataProcessor.Services
                 return 0;
             }
             double emissionFactor = referenceData.EmissionFactor.High;
-            return dayData.Energy * emissionFactor * emissionFactor;
+            return dayData.Energy * emissionFactor * generator.EmissionsRating;
         }
 
         public void CalculateHeatRate(GeneratorBase generator)
